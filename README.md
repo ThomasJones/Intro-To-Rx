@@ -31,5 +31,6 @@ http://reactivex.io/
 * Observer - receiver of signals
 * Subscription - a receipt returned when observer subscribes to observable that can be used to unsubscribe from future signals
 * Operator - chainable functions that can transform, combine, filter, or manipulate the observable in some way
-* 
+
+
 ## More Soon!
