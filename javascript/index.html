@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://www.promisejs.org/polyfills/promise-7.0.4.min.js"></script>
+
+    <script src="RxJS/dist/rx.all.js"></script>
+
+    <!--<script type="application/javascript" src="promises.js"></script>-->
+
+    <script src="observables_0_basic.js"></script>
+    <script src="observables_1_streams.js"></script>
+    <script src="observables_2_api_call_parallel.js"></script>
+    <script src="observables_3_api_call_sequential.js"></script>
+
+</head>
+<body style="padding: 20px;">
+
+<div class="container">
+    <h2>RxJS Demos</h2>
+    <h4>Open developer console...</h4>
+    <br><br>
+    <button type="button" id="transform" class="btn btn-primary">Transform Array</button>
+    <button type="button" id="merge" class="btn btn-primary">Merge Streams</button>
+    <button type="button" id="emitSample" class="btn btn-primary">Emit & Sample</button>
+    <button type="button" id="emitBuffer" class="btn btn-primary">Emit & Buffer</button>
+    <button type="button" id="subscribe" class="btn btn-primary">Subscribe & Unsubscribe</button>
+    <br><br>
+    <button type="button" id="apiParallel" class="btn btn-primary">Parallel API calls</button>
+    <button type="button" id="apiSequential" class="btn btn-primary">Sequential API calls</button>
+    <br><br>
+    <button type="button" id="increment" class="btn btn-primary">Filtered Button</button>
+</div>
+
+<script>
+
+    window.onload = function () {
+        var output = function (text) {
+            console.log(text);
+        };
+
+        var mapButtonToObservable = function (selectorLabel, observable) {
+            Rx.Observable.fromEvent(document.querySelector(selectorLabel), 'click')
+                    .flatMap(observable)
+                    .subscribe(i => output(i));
+        };
+
+        mapButtonToObservable('#transform', transformArrayContents());
+
+        mapButtonToObservable('#merge', mergeTwoSteams());
+
+        mapButtonToObservable('#emitSample', emitAndSample());
+
+        mapButtonToObservable('#emitBuffer', emitUpToAMaxAndBuffer());
+
+        Rx.Observable.fromEvent(document.querySelector('#subscribe'), 'click')
+                .subscribe(ignored => subscribeAndUnSubscribe(output));
+
+        Rx.Observable.fromEvent(document.querySelector('#apiSequential'), 'click')
+                .subscribe(ignored => getFirstQuestionFirstAnswerSequentially(output));
+
+        Rx.Observable.fromEvent(document.querySelector('#apiParallel'), 'click')
+                .subscribe(ignored => getQuestionAndAnswerInParallel(output));
+
+        var numClicks = 0;
+        var numFilteredClicks = 0;
+        var button = document.querySelector('#increment');
+        var refreshClickStream = Rx.Observable.fromEvent(button, 'click');
+        refreshClickStream
+                .subscribe(v => {
+                    numClicks = numClicks + 1;
+                    output("click..." + numClicks);
+                });
+
+        refreshClickStream
+                .sample(750)
+                .subscribe(v => {
+                    numFilteredClicks = numFilteredClicks + 1;
+                    output("sampled click..." + numFilteredClicks);
+                });
+    };
+
+</script>
+</body>
+</html>
